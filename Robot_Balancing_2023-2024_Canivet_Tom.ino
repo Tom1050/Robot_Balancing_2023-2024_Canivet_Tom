@@ -32,7 +32,6 @@ void setup() {
   Serial.begin(115200);  // Initialiser la communication série
   myservo.attach(21);
   delay(100);
-  myservo.attach(servoPin);
   // Initialisation du MPU6050
   mpu.initialize();
   if (mpu.testConnection()) {
@@ -51,13 +50,15 @@ void loop() {
   // Appel de la fonction Get_Accel_Angles
   Get_Accel_Angles();
   Serial.printf("agx:%07.3f acx:%07.3f agy:%07.3f acy:%07.3f agz:%07.3f acz:%07.3f\n", ACCEL_XANGLE, x_out, ACCEL_YANGLE, y_out, ACCEL_ZANGLE, z_out);
-  ecart = consigne - ACCEL_YANGLE;
+  ecart = float(consigne - ACCEL_YANGLE);
   Serial.println();
   Serial.println(ecart);
   
   delay(20);  // Ajouter des délais appropriés pour vos besoins
+  if (abs(ecart) >= 10)
   myservo.write(int(ecart*1));
-
+  Serial.printf("ecart :%07f", ecart);
+  Serial.println();
   /*if (pos < 0; pos = 50){
   myservo.write(pos);
   delay(10);
