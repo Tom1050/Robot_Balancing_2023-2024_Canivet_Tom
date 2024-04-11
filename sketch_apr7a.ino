@@ -43,7 +43,7 @@ void setup() {
  
   // Autres initialisations...
 }
- 
+ //coucou daoud
 void loop() {
   // Votre code ici...
   // Appel de la fonction Get_Accel_Angles
