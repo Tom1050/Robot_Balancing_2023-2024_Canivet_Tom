@@ -54,8 +54,9 @@ void loop() {
   ecart = consigne - ACCEL_YANGLE;
   Serial.println();
   Serial.println(ecart);
+  
   delay(20);  // Ajouter des délais appropriés pour vos besoins
-
+  myservo.write(int(ecart*1));
 
   /*if (pos < 0; pos = 50){
   myservo.write(pos);
