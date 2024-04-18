@@ -32,7 +32,7 @@ void setup() {
   Wire.begin();          // Initialiser la communication I2C
   Serial.begin(115200);  // Initialiser la communication série
   myservo1.attach(21);
-  myservo2.attach(26);
+  myservo2.attach(19);
   delay(100);
   // Initialisation du MPU6050
   mpu.initialize();
@@ -56,11 +56,11 @@ void loop() {
   Serial.println();
   Serial.println(ecart);  // Ajouter des délais appropriés pour vos besoins
 
-  myservo1.write(int(90 + ecart)); 
+  myservo2.write(int(97 + ecart)); 
   Serial.printf("ecart :%07f", ecart);
   Serial.println();
 
-  myservo2.write(int(97 - ecart)); 
+  myservo1.write(int(90 - ecart)); 
   Serial.printf("ecart :%07f", ecart);
   Serial.println();
 }
