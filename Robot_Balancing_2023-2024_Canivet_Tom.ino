@@ -9,11 +9,11 @@ float x_out, y_out, z_out;
 Servo myservo1;
 Servo myservo2;
 MPU6050 mpu;
-double Setpoint, Input, Output;
-double Kp=1, Ki=0.05, Kd=0.25;
+
 int pos = 0;
 //int pos- < 0
 float ecart;
+float derive;
 int consigne = 0;
 
 void Get_Accel_Angles() {
@@ -34,8 +34,8 @@ void Get_Accel_Angles() {
 void setup() {
   Wire.begin();          // Initialiser la communication I2C
   Serial.begin(115200);  // Initialiser la communication série
-  myservo1.attach(21);
-  myservo2.attach(19);
+  myservo1.attach(19);
+  myservo2.attach(21);
   delay(1);
   // Initialisation du MPU6050
   mpu.initialize();
@@ -55,14 +55,21 @@ void loop() {
   Get_Accel_Angles();
   Serial.printf("agx:%07.3f acx:%07.3f agy:%07.3f acy:%07.3f agz:%07.3f acz:%07.3f\n", ACCEL_XANGLE, x_out, ACCEL_YANGLE, y_out, ACCEL_ZANGLE, z_out);
   ecart = float(consigne - ACCEL_YANGLE);
+
+  derive = float(ecart * (-ACCEL_YANGLE));
   Serial.println();
+  Serial.print("ecart : ");
   Serial.println(ecart);  // Ajouter des délais appropriés pour vos besoins
+  Serial.print("derive : ");
+  Serial.println(derive);
+  Serial.print("ACCEL_YANGLE : ");
+  Serial.println(ACCEL_YANGLE);
 
-  myservo2.write(int(92 + ecart));
-  Serial.printf("ecart :%07.3f", ecart);
+  myservo2.write(int(89 + (ecart)*(derive)));
+ // Serial.printf("ecart :%07.3f", ecart);
   Serial.println();
 
-  myservo1.write(int(95 - ecart));
-  Serial.printf("ecart :%07.3f", ecart);
+  myservo1.write(int(97 - (ecart)*(derive)));
+  //Serial.printf("ecart :%07.3f", ecart);
   Serial.println();
 }
