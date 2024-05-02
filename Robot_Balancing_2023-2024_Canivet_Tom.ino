@@ -3,15 +3,15 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>  //librairie I2C
 #include <ESP32Servo.h>
-#include <PID_v1_bc.h>
+#include <PID_v1.h>
 float ACCEL_XANGLE, ACCEL_YANGLE, ACCEL_ZANGLE;  // Déclaration des variables globales
 float x_out, y_out, z_out;
+float ACCEL_YANGLE_mod;
 Servo myservo1;
 Servo myservo2;
 MPU6050 mpu;
 
-int pos = 0;
-//int pos- < 0
+
 float ecart;
 float derive;
 int consigne = 0;
@@ -56,20 +56,26 @@ void loop() {
   Serial.printf("agx:%07.3f acx:%07.3f agy:%07.3f acy:%07.3f agz:%07.3f acz:%07.3f\n", ACCEL_XANGLE, x_out, ACCEL_YANGLE, y_out, ACCEL_ZANGLE, z_out);
   ecart = float(consigne - ACCEL_YANGLE);
 
-  derive = float(ecart * (-ACCEL_YANGLE));
-  Serial.println();
-  Serial.print("ecart : ");
-  Serial.println(ecart);  // Ajouter des délais appropriés pour vos besoins
-  Serial.print("derive : ");
-  Serial.println(derive);
-  Serial.print("ACCEL_YANGLE : ");
-  Serial.println(ACCEL_YANGLE);
+  ACCEL_YANGLE_mod = ACCEL_YANGLE * 5;
 
-  myservo2.write(int(89 + (ecart)*(derive)));
- // Serial.printf("ecart :%07.3f", ecart);
+  if(ACCEL_YANGLE_mod < 1){
+    ACCEL_YANGLE_mod = 1;
+  } 
+
+  derive = float(ecart * ACCEL_YANGLE_mod);
+  Serial.println();
+  Serial.printf("ecart :%07.3f", ecart); // Ajouter des délais appropriés pour vos besoins
+  Serial.println();
+  Serial.printf("derive :%07.3f", derive);
+  Serial.println();
+  Serial.printf("ACCEL_YANGLE_mod :%07.3f", ACCEL_YANGLE_mod);
   Serial.println();
 
-  myservo1.write(int(97 - (ecart)*(derive)));
-  //Serial.printf("ecart :%07.3f", ecart);
+  myservo2.write(int(95 + (ecart)*(derive)));
+ // Serial.printf("myservo2 :%07.3f", myservo2);
+  Serial.println();
+
+  myservo1.write(int(101 - (ecart)*(derive)));
+ // Serial.printf("myservo1 :%07.3f", myservo1);
   Serial.println();
 }
