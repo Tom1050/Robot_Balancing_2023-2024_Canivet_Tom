@@ -33,7 +33,7 @@ void Get_Accel_Angles() {
 
 void setup() {
   Wire.begin();          // Initialiser la communication I2C
-  Serial.begin(115200);  // Initialiser la communication série
+  Serial.begin(250000);  // Initialiser la communication série
   myservo1.attach(19);
   myservo2.attach(21);
   delay(1);
@@ -56,19 +56,17 @@ void loop() {
   Serial.printf("agx:%07.3f acx:%07.3f agy:%07.3f acy:%07.3f agz:%07.3f acz:%07.3f\n", ACCEL_XANGLE, x_out, ACCEL_YANGLE, y_out, ACCEL_ZANGLE, z_out);
   ecart = float(consigne - ACCEL_YANGLE);
 
-  ACCEL_YANGLE_mod = ACCEL_YANGLE * 5;
+  if(ecart < -5 | ecart > 5){
+    derive = 10;
+  } else {
+    derive = 20;
+  }
 
-  if(ACCEL_YANGLE_mod < 1){
-    ACCEL_YANGLE_mod = 1;
-  } 
-
-  derive = float(ecart * ACCEL_YANGLE_mod);
+ 
   Serial.println();
   Serial.printf("ecart :%07.3f", ecart); // Ajouter des délais appropriés pour vos besoins
   Serial.println();
   Serial.printf("derive :%07.3f", derive);
-  Serial.println();
-  Serial.printf("ACCEL_YANGLE_mod :%07.3f", ACCEL_YANGLE_mod);
   Serial.println();
 
   myservo2.write(int(95 + (ecart)*(derive)));
