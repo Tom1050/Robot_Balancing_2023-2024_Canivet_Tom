@@ -20,7 +20,7 @@ int consigne = 0;
 
 // PID variables
 double Setpoint, Input, Output;
-double Kp = 5, Ki = 5, Kd = 1; // PID coefficients (adjust these values as needed)
+double Kp = 6, Ki = 4, Kd = 4; // PID coefficients (adjust these values as needed)
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 // Bluetooth variables
@@ -101,8 +101,8 @@ void loop() {
 
   myPID.Compute();
 
-  consigne_moteur_g = limite(int(93 + Output), 220, -220);
-  consigne_moteur_d = limite(int(101 - Output), 120, -120);
+  consigne_moteur_g = limite(int(92 + Output), 140, -140);
+  consigne_moteur_d = limite(int(100 - Output), 140, -140);
 
   myservo2.write(consigne_moteur_g);
   myservo1.write(consigne_moteur_d);
