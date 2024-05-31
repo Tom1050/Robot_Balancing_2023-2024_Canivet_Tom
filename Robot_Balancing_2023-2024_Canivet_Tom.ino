@@ -69,7 +69,7 @@ int limite(int val, int lim_haute, int lim_basse) {
   else
     return val;
 }
-//mdr
+//mdr enfaite non
 void setup() {
   Wire.begin();          
   Serial.begin(115200);  
