@@ -6,7 +6,7 @@
 
 #define _10ms 10
 
-float ACCEL_YANGLE1;         //variable de l'axe X et Y de l'accéléromètre du MPU6050
+float ACCEL_YANGLE1;  //variable de l'axe X et Y de l'accéléromètre du MPU6050
 float ACCEL_YANGLE2;
 float x_out, y_out, z_out;  //variable de la sortie de l'axe X et Y de l'accéléromètre du MPU6050
 
@@ -25,18 +25,19 @@ int erreur1 = 0;
 int erreur2 = 0;
 int consigne = 0;
 
-int derive = 0;
+int integral = 0;
 
-  unsigned long previousMillis = 0;  //variable de la précédente millis
+unsigned long previousMillis = 0;  //variable de la précédente millis
 // Complementary filter variables
-float angle = 0;     // Filtered angle / variable de la valeur de l'angle
+float angle1 = 0;
+float angle2 = 0;    // Filtered angle / variable de la valeur de l'angle
 float gyroRate = 0;  // Gyro rate / initalisation de la vitesse du gyroscope
 float alpha = 0.98;  // Filter coefficient / variable du coéficient du filtre
 
 
 void Get_Accel_Angles1() {
 
-  int16_t ax, ay, az, gx, gy, gz;  // variable de l'accéléromètre et du gyscope avec l'axe X, Y et Z
+  int16_t ax, ay, az, gx, gy, gz;                // variable de l'accéléromètre et du gyscope avec l'axe X, Y et Z
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);  //erreur ici
 
   //Accelerometer data
@@ -54,13 +55,13 @@ void Get_Accel_Angles1() {
   float dt = (currentMillis - previousMillis) / 1000.0;
   previousMillis = currentMillis;
 
-  angle = alpha * (angle + gyroRate * dt) + (1 - alpha) * ACCEL_YANGLE;
+  angle1 = alpha * (angle1 + gyroRate * dt) + (1 - alpha) * ACCEL_YANGLE1;
 }
 
 
 void Get_Accel_Angles2() {
 
-  int16_t ax, ay, az, gx, gy, gz;  // variable de l'accéléromètre et du gyscope avec l'axe X, Y et Z
+  int16_t ax, ay, az, gx, gy, gz;                // variable de l'accéléromètre et du gyscope avec l'axe X, Y et Z
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);  //erreur ici
 
   //Accelerometer data
@@ -78,7 +79,7 @@ void Get_Accel_Angles2() {
   float dt = (currentMillis - previousMillis) / 1000.0;
   previousMillis = currentMillis;
 
-  angle = alpha * (angle + gyroRate * dt) + (1 - alpha) * ACCEL_YANGLE;
+  angle2 = alpha * (angle2 + gyroRate * dt) + (1 - alpha) * ACCEL_YANGLE2;
 }
 
 int limite(int val, int lim_haute, int lim_basse) {
@@ -120,7 +121,7 @@ void loop() {
   {
 
     tempsMemoriser = millis();  // Mise à jour de t pour le prochain passage
- 
+
 
     Get_Accel_Angles1();
 
@@ -131,7 +132,7 @@ void loop() {
       digitalWrite(LED, Etat_LED);
     }
 
-   /* if (vd_10ms++ >= 1)  //boucle toute les 40millisecond
+    /* if (vd_10ms++ >= 1)  //boucle toute les 40millisecond
     {
       vd_10ms = 0;
       tempChute = (erreur1 * );
@@ -140,19 +141,21 @@ void loop() {
     if (vd_20ms++ >= 2)  //boucle toute les 20millisecond pour commander les servomoteurs
     {
 
-      int tempCalcul = 0;
+      int tempCalcul1 = 0;
+      int tempCalcul2 = 0;
       vd_20ms = 0;
-      Get_Accel_Angle2();
-      erreur1 = int(86.6 - ACCEL_YANGLE);
-      erreur2 = int(98.5 + ACCEL_YANGLE);
+      Get_Accel_Angles2();
+      erreur1 = int(87.2 - ACCEL_YANGLE1);
+      erreur2 = int(98.3 + ACCEL_YANGLE2);
 
-      derive = ACCEL_YANGLE2 * 3.5 - ACCEL_YANGLE1;
+      integral = int(ACCEL_YANGLE2 * 2.5 - ACCEL_YANGLE1);
 
-      tempCalcul = int(erreur1 - 90) * derive;
+      tempCalcul1 = int(erreur1 + 90) * integral;
+      tempCalcul2 = int(erreur1 +  90) * integral;
 
-      erreur1 = int(limite(erreur1 + tempCalcul, 180, 0));
-      erreur2 = int(limite(erreur2 - tempCalcul, 180, 0));
-      
+      erreur1 = int(limite(erreur1 - tempCalcul2, 180, 0));
+      erreur2 = int(limite(erreur2 + tempCalcul1, 180, 0));
+
 
 
 
@@ -168,7 +171,7 @@ void loop() {
     {
       vd_100ms = 0;
 
-      Serial.printf("\n YANGLE : %07.3f err1:%d err2:%d", ACCEL_YANGLE, erreur1, erreur2);
+      Serial.printf("\n YANGLE1 : %07.3f YANGLE2 : %07.3f err1:%d err2:%d integral : %07.3f", ACCEL_YANGLE1, ACCEL_YANGLE2, erreur1, erreur2, integral);
     }
   }
 }
