@@ -132,10 +132,10 @@ void loop() {
       digitalWrite(LED, Etat_LED);
     }
 
-    /* if (vd_10ms++ >= 1)  //boucle toute les 40millisecond
+  /*  if (vd_10ms++ >= 1)  //boucle toute les 40millisecond
     {
       vd_10ms = 0;
-      tempChute = (erreur1 * );
+      tempChute = (erreur1*);
     }*/
 
     if (vd_20ms++ >= 2)  //boucle toute les 20millisecond pour commander les servomoteurs
@@ -144,23 +144,22 @@ void loop() {
       int tempCalcul1 = 0;
       int tempCalcul2 = 0;
       vd_20ms = 0;
-      Get_Accel_Angles2();
-      erreur1 = int(87.2 - ACCEL_YANGLE1);
-      erreur2 = int(98.3 + ACCEL_YANGLE2);
 
-      integral = int(ACCEL_YANGLE2 * 2.5 - ACCEL_YANGLE1);
+      erreur1 = int(89 - ACCEL_YANGLE1);
+      erreur2 = int(96.5 + ACCEL_YANGLE2);
+
+      integral = int(ACCEL_YANGLE2 * 3.3 - ACCEL_YANGLE1);
 
       tempCalcul1 = int(erreur1 + 90) * integral;
-      tempCalcul2 = int(erreur1 +  90) * integral;
+      tempCalcul2 = int(erreur1 + 90) * integral;
 
       erreur1 = int(limite(erreur1 - tempCalcul2, 180, 0));
       erreur2 = int(limite(erreur2 + tempCalcul1, 180, 0));
 
-
-
-
       myservo2.write(erreur2);
       myservo1.write(erreur1);
+
+      Get_Accel_Angles2();
     }
 
     if (vd_40ms++ >= 4)  //boucle toute les 40millisecond
